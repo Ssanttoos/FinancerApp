@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"] - Financer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+
+@{
+    var userName = Context.Session.GetString("UserName");
+    var isLogged = userName != null;
+}
+
+@if (isLogged)
+{
+    <div class="app-shell">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-logo">
+                <span class="logo-icon">◈</span>
+                <span class="logo-text">Financer</span>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="/Home/Index" class="nav-item @(ViewData["Active"]?.ToString() == "dashboard" ? "active" : "")">
+                    <span class="nav-icon">⬡</span> Dashboard
+                </a>
+                <a href="/Transactions" class="nav-item @(ViewData["Active"]?.ToString() == "transactions" ? "active" : "")">
+                    <span class="nav-icon">⇄</span> Transações
+                </a>
+                <a href="/Goals" class="nav-item @(ViewData["Active"]?.ToString() == "goals" ? "active" : "")">
+                    <span class="nav-icon">◎</span> Metas
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">@(userName?[0].ToString().ToUpper())</div>
+                    <span class="user-name">@userName</span>
+                </div>
+                <a href="/Auth/Logout" class="logout-btn" title="Sair">⏻</a>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="main-content">
+            @RenderBody()
+        </main>
+    </div>
+}
+else
+{
+    @RenderBody()
+}
+
+<script src="~/js/site.js"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
