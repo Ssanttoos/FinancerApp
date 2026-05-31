@@ -19,7 +19,6 @@
 @if (isLogged)
 {
     <div class="app-shell">
-        <!-- Sidebar -->
         <aside class="sidebar">
             <div class="sidebar-logo">
                 <span class="logo-icon">◈</span>
@@ -44,8 +43,6 @@
                 <a href="/Auth/Logout" class="logout-btn" title="Sair">⏻</a>
             </div>
         </aside>
-
-        <!-- Main content -->
         <main class="main-content">
             @RenderBody()
         </main>
@@ -56,7 +53,27 @@ else
     @RenderBody()
 }
 
-<script src="~/js/site.js"></script>
+<script>
+function openModal(id) {
+  var modal = document.getElementById(id);
+  if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function closeModal(id) {
+  var modal = document.getElementById(id);
+  if (modal) { modal.style.display = 'none'; document.body.style.overflow = ''; }
+}
+document.addEventListener('click', function(e) {
+  if (e.target.classList.contains('modal-overlay')) {
+    e.target.style.display = 'none'; document.body.style.overflow = '';
+  }
+});
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay').forEach(function(m) { m.style.display = 'none'; });
+    document.body.style.overflow = '';
+  }
+});
+</script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
