@@ -611,10 +611,12 @@ body {
   background: rgba(0,0,0,0.7);
   backdrop-filter: blur(4px);
   z-index: 1000;
-  display: flex !important;
   align-items: center;
   justify-content: center;
   animation: fadeIn 0.15s ease;
+}
+.modal-overlay.open {
+  display: flex;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
