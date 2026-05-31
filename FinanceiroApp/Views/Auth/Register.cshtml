@@ -1,0 +1,43 @@
+@model FinanceiroApp.Models.RegisterViewModel
+@{ Layout = "_Layout"; ViewData["Title"] = "Cadastro"; }
+
+<div class="auth-page">
+    <div class="auth-bg">
+        <div class="auth-blob b1"></div>
+        <div class="auth-blob b2"></div>
+        <div class="auth-blob b3"></div>
+    </div>
+
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">◈</div>
+            <h1>Criar conta</h1>
+            <p>Comece a controlar suas finanças</p>
+        </div>
+
+        @if (Model.Error != null)
+        {
+            <div class="alert-error">⚠ @Model.Error</div>
+        }
+
+        <form method="post" action="/Auth/Register">
+            <div class="field">
+                <label>Nome</label>
+                <input type="text" name="Name" placeholder="Seu nome" required />
+            </div>
+            <div class="field">
+                <label>Email</label>
+                <input type="email" name="Email" placeholder="seu@email.com" required />
+            </div>
+            <div class="field">
+                <label>Senha</label>
+                <input type="password" name="Password" placeholder="Mínimo 6 caracteres" minlength="6" required />
+            </div>
+            <button type="submit" class="btn-primary btn-full">Criar conta →</button>
+        </form>
+
+        <div class="auth-footer">
+            Já tem conta? <a href="/Auth/Login">Entrar</a>
+        </div>
+    </div>
+</div>

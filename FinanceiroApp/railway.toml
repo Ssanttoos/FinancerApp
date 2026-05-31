@@ -1,0 +1,8 @@
+# Configuração do Railway
+[build]
+builder = "dockerfile"
+
+[deploy]
+startCommand = "dotnet FinanceiroApp.dll"
+healthcheckPath = "/"
+restartPolicyType = "on_failure"

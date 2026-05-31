@@ -1,0 +1,146 @@
+@model List<FinanceiroApp.Models.Goal>
+@{ Layout = "_Layout"; ViewData["Title"] = "Metas"; ViewData["Active"] = "goals"; }
+
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Metas de Economia</h1>
+        <p class="page-subtitle">@Model.Count meta(s) ativa(s)</p>
+    </div>
+    <button class="btn-primary" onclick="openModal('modal-goal')">+ Nova meta</button>
+</div>
+
+@if (Model.Any())
+{
+    <div class="goals-grid">
+        @foreach (var g in Model)
+        {
+            var daysLeft = (g.Deadline - DateTime.Now).Days;
+            var pct = (double)g.ProgressPercent;
+
+            <div class="goal-card @(pct >= 100 ? "goal-complete" : "")">
+                @if (pct >= 100)
+                {
+                    <div class="goal-badge-complete">✓ Concluída!</div>
+                }
+                <h3 class="goal-title">@g.Title</h3>
+                @if (!string.IsNullOrEmpty(g.Description))
+                {
+                    <p class="goal-desc">@g.Description</p>
+                }
+
+                <div class="goal-progress-wrap">
+                    <div class="goal-progress-bar">
+                        <div class="goal-progress-fill" style="width: @pct%"></div>
+                    </div>
+                    <span class="goal-pct-label">@g.ProgressPercent.ToString("0")%</span>
+                </div>
+
+                <div class="goal-values">
+                    <div class="goal-current">
+                        <span class="val-label">Economizado</span>
+                        <span class="val-amount green">R$ @g.CurrentAmount.ToString("N2")</span>
+                    </div>
+                    <div class="goal-target">
+                        <span class="val-label">Meta</span>
+                        <span class="val-amount">R$ @g.TargetAmount.ToString("N2")</span>
+                    </div>
+                </div>
+
+                <div class="goal-footer">
+                    <span class="days-left @(daysLeft < 30 ? "urgent" : "")">
+                        @if (daysLeft < 0) { <span>Prazo encerrado</span> }
+                        else { <span>@daysLeft dias restantes</span> }
+                    </span>
+                    <span>@g.Deadline.ToString("dd/MM/yyyy")</span>
+                </div>
+
+                @if (pct < 100)
+                {
+                    <button class="btn-add-amount" onclick="openAddAmount(@g.Id, '@g.Title')">+ Adicionar valor</button>
+                }
+
+                <form method="post" action="/Goals/Delete/@g.Id" onsubmit="return confirm('Excluir esta meta?')" style="margin-top:8px">
+                    <button type="submit" class="btn-delete-full">Excluir meta</button>
+                </form>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="empty-full">
+        <div class="empty-icon-big">◎</div>
+        <h2>Nenhuma meta criada</h2>
+        <p>Defina objetivos financeiros e acompanhe seu progresso</p>
+        <button class="btn-primary" onclick="openModal('modal-goal')">Criar primeira meta</button>
+    </div>
+}
+
+<!-- Modal: Nova Meta -->
+<div id="modal-goal" class="modal-overlay" style="display:none">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Nova Meta</h3>
+            <button onclick="closeModal('modal-goal')" class="modal-close">✕</button>
+        </div>
+        <form method="post" action="/Goals/Create">
+            <div class="field">
+                <label>Título da meta</label>
+                <input type="text" name="Title" placeholder="Ex: Viagem para Europa" required />
+            </div>
+            <div class="field">
+                <label>Descrição (opcional)</label>
+                <input type="text" name="Description" placeholder="Detalhes da meta..." />
+            </div>
+            <div class="field-row">
+                <div class="field">
+                    <label>Valor alvo (R$)</label>
+                    <input type="number" name="TargetAmount" step="0.01" min="1" placeholder="0,00" required />
+                </div>
+                <div class="field">
+                    <label>Já economizou (R$)</label>
+                    <input type="number" name="CurrentAmount" step="0.01" min="0" value="0" placeholder="0,00" />
+                </div>
+            </div>
+            <div class="field">
+                <label>Prazo</label>
+                <input type="date" name="Deadline" value="@DateTime.Now.AddMonths(6).ToString("yyyy-MM-dd")" required />
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="closeModal('modal-goal')" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-primary">Criar meta →</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Adicionar valor à meta -->
+<div id="modal-add-amount" class="modal-overlay" style="display:none">
+    <div class="modal modal-sm">
+        <div class="modal-header">
+            <h3>Adicionar valor</h3>
+            <button onclick="closeModal('modal-add-amount')" class="modal-close">✕</button>
+        </div>
+        <p id="add-amount-title" style="color:#94a3b8;margin-bottom:16px"></p>
+        <form method="post" id="add-amount-form">
+            <div class="field">
+                <label>Valor a adicionar (R$)</label>
+                <input type="number" name="amount" step="0.01" min="0.01" placeholder="0,00" required />
+            </div>
+            <div class="modal-actions">
+                <button type="button" onclick="closeModal('modal-add-amount')" class="btn-secondary">Cancelar</button>
+                <button type="submit" class="btn-primary">Adicionar →</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+function openAddAmount(goalId, title) {
+    document.getElementById('add-amount-title').textContent = title;
+    document.getElementById('add-amount-form').action = `/Goals/AddAmount?id=${goalId}`;
+    openModal('modal-add-amount');
+}
+</script>
+}
